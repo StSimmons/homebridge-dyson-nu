@@ -86,6 +86,12 @@ CoolLink.prototype.initCommonSensors = function() {
         .getCharacteristic(Characteristic.On)
         .on('get', this.isRotationOn.bind(this))
         .on('set', this.setRotation.bind(this));
+    //Night Mode switch
+    this.night_switch = new Service.Switch("Night - " + this.name, "Night");
+    this.night_switch
+        .getCharacteristic(Characteristic.On)
+        .on('get', this.isNightOn.bind(this))
+        .on('set', this.setNight.bind(this));
 }
 CoolLink.prototype.initSpecificSensors = function() {
     // Auto switch
@@ -232,6 +238,27 @@ CoolLink.prototype.setRotation = function(value, callback) {
     var now = new Date();
     var oson = value ? "ON" : "OFF";
     var message = '{"msg":"STATE-SET","time":"' + now.toISOString() + '","data":{"oson":"' + oson + '"}}';
+    this.mqtt_client.publish(
+        this.getCommandTopic(),
+        message
+    );
+    this.isRotationOn(callback);
+}
+CoolLink.prototype.isNightOn = function(callback) {
+    var that = this;
+    this.json_emitter.once('state', (json) => {
+        var nmod = json['product-state']['nmod'];
+        var on = (nmod === "ON")
+        that.log("Night:", on);
+        callback(null, on);
+    });
+    this.requestCurrentState();
+}
+CoolLink.prototype.setNight = function(value, callback) {
+    var that = this;
+    var now = new Date();
+    var nmod = value ? "ON" : "OFF";
+    var message = '{"msg":"STATE-SET","time":"' + now.toISOString() + '","data":{"nmod":"' + nmod + '"}}';
     this.mqtt_client.publish(
         this.getCommandTopic(),
         message
