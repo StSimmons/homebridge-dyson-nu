@@ -112,6 +112,7 @@ CoolLink.prototype.getServices = function() {
         this.fan,
         this.auto_switch,
         this.rotation_switch,
+        this.night_switch,
     ];
 }
 CoolLink.prototype.getMQTTPrefix = function() {
