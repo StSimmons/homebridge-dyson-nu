@@ -80,6 +80,19 @@ CoolLink.prototype.initCommonSensors = function() {
         .getCharacteristic(Characteristic.RotationSpeed)
         .on('get', this.getFanRotationSpeed.bind(this))
         .on('set', this.setFanRotationSpeed.bind(this));
+    // Heat Temperature
+    this.fan
+        .addCharacteristic(Characteristic.CurrentTemperature)
+        .on('get', this.getCurrentTemperature.bind(this));
+    this.fan
+        .addCharacteristic(Characteristic.TargetTemperature)
+        .on('set', this.setTargetTemperature.bind(this));
+    // Heat switch
+    this.heat_switch = new Service.Switch("Heat - " + this.name, "Heat");
+    this.heat_switch
+        .getCharacteristic(Characteristic.On)
+        .on('get', this.isHeatOn.bind(this))
+        .on('set', this.setHeat.bind(this));
     // Rotation switch
     this.rotation_switch = new Service.Switch("Rotation - " + this.name, "Rotation");
     this.rotation_switch
@@ -111,6 +124,7 @@ CoolLink.prototype.getServices = function() {
         this.air_quality_sensor,
         this.fan,
         this.auto_switch,
+        this.heat_switch,
         this.rotation_switch,
         this.night_switch,
     ];
@@ -224,6 +238,48 @@ CoolLink.prototype.setAuto = function(value, callback) {
     this.fan.getCharacteristic(Characteristic.On).updateValue(false);
     this.isAutoOn(callback);
 }
+CoolLink.prototype.isHeatOn = function(callback) {
+    var that = this;
+    this.json_emitter.once('state', (json) => {
+        var hmod = json['product-state']['hmod'];
+        var on = (hmod === "ON")
+        that.log("Heat:", on);
+        callback(null, on);
+    });
+    this.requestCurrentState();
+}
+CoolLink.prototype.setHeat = function(value, callback) {
+    var that = this;
+    var now = new Date();
+    var hmod = value ? "HOT" : "COOL";
+    var message = '{"msg":"STATE-SET","time":"' + now.toISOString() + '","data":{"hmod":"' + hmod + '"}}';
+    this.mqtt_client.publish(
+        this.getCommandTopic(),
+        message
+    );
+    this.isHeatOn(callback);
+}
+//HotCoolLink.prototype.getCurrentTemperature = function(callback) {
+//    var that = this;
+//    this.json_emitter.once('state', (json) => {
+//        var ??thmod?? = parseInt(json['product-state']['??thmod??']);
+//        var current_temperature = fnsp * 10;
+//        that.log("Fan Temperature:", current_temperature, '%');
+//        callback(null, current_temperature);
+//    });
+//    this.requestCurrentState();
+//}
+//HotCoolLink.prototype.setTargetTemperature = function(value, callback) {
+//    var that = this;
+//    var now = new Date();
+//    var ??thmod?? = Math.round(value / 10);
+//    var message = '{"msg":"STATE-SET","time":"' + now.toISOString() + '","data":{"??thmod??":"' + ??thmod?? + '"}}'
+//    this.mqtt_client.publish(
+//        this.getCommandTopic(),
+//        message
+//    );
+//    this.getCurrentTemperature (callback);
+//}
 CoolLink.prototype.isRotationOn = function(callback) {
     var that = this;
     this.json_emitter.once('state', (json) => {
