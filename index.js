@@ -264,7 +264,7 @@ CoolLink.prototype.setNight = function(value, callback) {
         this.getCommandTopic(),
         message
     );
-    this.isRotationOn(callback);
+    this.isNightOn(callback);
 }
 function HotCoolLink(log, config) {
     CoolLink.call(this, log, config);
