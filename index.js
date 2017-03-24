@@ -87,19 +87,19 @@ CoolLink.prototype.initCommonSensors = function() {
     this.fan
         .addCharacteristic(Characteristic.TargetTemperature)
         .on('set', this.setTargetTemperature.bind(this));
-    // Heat switch
+    // Heat switch - could be incorperated into Thermostat.Service?? (OFF/HEAT/COOL/AUTO) but AUTO is not initCommonSensors??
     this.heat_switch = new Service.Switch("Heat - " + this.name, "Heat");
     this.heat_switch
         .getCharacteristic(Characteristic.On)
         .on('get', this.isHeatOn.bind(this))
         .on('set', this.setHeat.bind(this));
-    // Rotation switch
+    // Rotation switch - should be incorpoprated in Fanv2.Service as Characteristic.SwingMode (Formats.UINT8) (Characteristic.SwingMode.SWING_DISABLED = 0/Characteristic.SwingMode.SWING_ENABLED = 1)
     this.rotation_switch = new Service.Switch("Rotation - " + this.name, "Rotation");
     this.rotation_switch
         .getCharacteristic(Characteristic.On)
         .on('get', this.isRotationOn.bind(this))
         .on('set', this.setRotation.bind(this));
-    //Night Mode switch
+    //Night Mode switch - maybe add to Fanv2.Service as Characteristic.NightVision (Formats.BOOL)??
     this.night_switch = new Service.Switch("Night - " + this.name, "Night");
     this.night_switch
         .getCharacteristic(Characteristic.On)
@@ -242,7 +242,7 @@ CoolLink.prototype.isHeatOn = function(callback) {
     var that = this;
     this.json_emitter.once('state', (json) => {
         var hmod = json['product-state']['hmod'];
-        var on = (hmod === "ON")
+        var on = (hmod === "HOT")
         that.log("Heat:", on);
         callback(null, on);
     });
