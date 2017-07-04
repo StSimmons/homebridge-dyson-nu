@@ -227,6 +227,7 @@ CoolLink.prototype.requestCurrentState = function() {
 CoolLink.prototype.getTemperature = function(callback) {
     var that = this;
     this.json_emitter.once('sensor', (json) => {
+        that.log('Json:', json);
         var temperature = parseFloat(json.data.tact) / 10 - 273.15;
         that.log("Temperature:", temperature.toFixed(2));
         callback(null, temperature);
