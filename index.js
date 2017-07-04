@@ -74,8 +74,9 @@ CoolLink.prototype.getHeaterCoolerState = function(callback) {
 
 CoolLink.prototype.getTargetTemperature = function(callback) {
     this.log("Get target temp");
+    that = this;
     this.json_emitter.once('state', (json) => {
-        this.log(json);
+        that.log(json);
         callback(null, 10);
     });
 }
