@@ -50,7 +50,7 @@ CoolLink.prototype.initConnection = function() {
     });
 }
 
-CoolLink.prototype.getHeaterCoolerState = function(value, callback) {
+CoolLink.prototype.getHeaterCoolerState = function(callback) {
     var that = this;
     this.json_emitter.once('state', (json) => {
         var fmod = json['product-state']['fmod'];
@@ -74,10 +74,12 @@ CoolLink.prototype.getHeaterCoolerState = function(value, callback) {
 
 CoolLink.prototype.getTargetTemperature = function(callback) {
     this.log("Get target temp");
+    callback(null, 10);
 }
 
 CoolLink.prototype.setTargetTemperature = function(temp, callback) {
     this.log("Set target temp to", temp);
+    callback(null);
 }
 
 CoolLink.prototype.getTemperatureDisplayUnits = function(callback) {
@@ -115,7 +117,7 @@ CoolLink.prototype.initCommonSensors = function() {
     this.temperature_sensor.getCharacteristic(Characteristic.TemperatureDisplayUnits)
         .on('get', this.getTemperatureDisplayUnits.bind(this));
 
-    this.service.getCharacteristic(Characteristic.TargetTemperature)
+    this.temperature_sensor.getCharacteristic(Characteristic.TargetTemperature)
         .setProps({
             minValue: 10,
             maxValue: 40,
@@ -151,7 +153,7 @@ CoolLink.prototype.initCommonSensors = function() {
     // Heat Temperature
     this.fan
         .addCharacteristic(Characteristic.CurrentTemperature)
-        .on('get', this.getCurrentTemperature.bind(this));
+        .on('get', this.getTemperature.bind(this));
     this.fan
         .addCharacteristic(Characteristic.TargetTemperature)
         .on('set', this.setTargetTemperature.bind(this));
