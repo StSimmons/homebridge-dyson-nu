@@ -49,13 +49,81 @@ CoolLink.prototype.initConnection = function() {
         }
     });
 }
+
+CoolLink.prototype.getHeaterCoolerState = function(value, callback) {
+    var that = this;
+    this.json_emitter.once('state', (json) => {
+        var fmod = json['product-state']['fmod'];
+        var on = (fmod === "FAN");
+        var hmod = json['product-state']['hmod'];
+        var heating = (hmod === "HEAT");
+        var state = Characteristic.CurrentHeaterCoolerState.INACTIVE;
+        if (!on) {
+            state = Characteristic.CurrentHeaterCoolerState.INACTIVE;
+        } else {
+            if (heating) {
+                state = Characteristic.CurrentHeaterCoolerState.HEATING;
+            } else {
+                state = Characteristic.CurrentHeaterCoolerState.COOLING;
+            }
+        }
+        that.log("Heating:", state);
+        callback(null, state);
+    });
+}
+
+CoolLink.prototype.getTargetTemperature = function(callback) {
+    this.log("Get target temp");
+}
+
+CoolLink.prototype.setTargetTemperature = function(temp, callback) {
+    this.log("Set target temp to", temp);
+}
+
+CoolLink.prototype.getTemperatureDisplayUnits = function(callback) {
+    var accessory = this;
+    callback(null, Characteristic.TemperatureDisplayUnits.CELSIUS);
+}
+
+CoolLink.prototype.setHeaterCoolerState = function(value, callback) {
+    var that = this;
+    var now = new Date();
+    var hmod = value === Characteristic.CurrentHeaterCoolerState.HEATING ? "HEAT" : "OFF";
+    var message = '{"msg":"STATE-SET","time":"' + now.toISOString() + '","data":{"hmod":"' + hmod + '"}}';
+    this.mqtt_client.publish(
+        this.getCommandTopic(),
+        message
+    );
+    this.getHeaterCoolerState(callback);
+}
+
 CoolLink.prototype.initCommonSensors = function() {
     // Temperature sensor
-    this.temperature_sensor = new Service.TemperatureSensor(this.name);
+    this.temperature_sensor = new Service.Thermostat(this.name);
     this.temperature_sensor
         .getCharacteristic(Characteristic.CurrentTemperature)
         .setProps({minValue: -50, maxValue: 100})
         .on('get', this.getTemperature.bind(this));
+
+    this.temperature_sensor.getCharacteristic(Characteristic.CurrentHeatingCoolingState)
+        .on('get', this.getHeaterCoolerState.bind(this));
+
+    this.temperature_sensor.getCharacteristic(Characteristic.TargetHeatingCoolingState)
+        .on('get', this.getHeaterCoolerState.bind(this))
+        .on('set', this.setHeaterCoolerState.bind(this));
+
+    this.temperature_sensor.getCharacteristic(Characteristic.TemperatureDisplayUnits)
+        .on('get', this.getTemperatureDisplayUnits.bind(this));
+
+    this.service.getCharacteristic(Characteristic.TargetTemperature)
+        .setProps({
+            minValue: 10,
+            maxValue: 40,
+            minStep: 1
+        })
+        .on('get', this.getTargetTemperature.bind(this))
+        .on('set', this.setTargetTemperature.bind(this));
+
     // Humidity sensor
     this.humidity_sensor = new Service.HumiditySensor(this.name);
     this.humidity_sensor
