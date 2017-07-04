@@ -41,9 +41,11 @@ CoolLink.prototype.initConnection = function() {
         json = JSON.parse(message);
         if (json !== null) {
             if (json.msg === "ENVIRONMENTAL-CURRENT-SENSOR-DATA") {
+                that.log("Sensor messgae");
                 that.json_emitter.emit('sensor', json);
             }
             if (json.msg === "CURRENT-STATE") {
+                that.log("State");
                 that.json_emitter.emit('state', json);
             }
         }
