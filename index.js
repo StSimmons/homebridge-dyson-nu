@@ -254,6 +254,7 @@ CoolLink.prototype.getAirQuality = function(callback) {
 CoolLink.prototype.isFanOn = function(callback) {
     var that = this;
     this.json_emitter.once('state', (json) => {
+        that.log("Json:", json);
         var fmod = json['product-state']['fmod'];
         var on = (fmod === "FAN")
         that.log("Fan:", on);
