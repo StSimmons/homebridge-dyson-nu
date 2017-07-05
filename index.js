@@ -147,7 +147,7 @@ CoolLink.prototype.getServices = function() {
         this.air_quality_sensor,
         this.fan,
         this.auto_switch,
-        this.heat_switch,
+        //this.heat_switch,
         this.rotation_switch,
         this.night_switch,
     ];
