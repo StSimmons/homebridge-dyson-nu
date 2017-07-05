@@ -378,7 +378,7 @@ CoolLink.prototype.getTargetTemperature = function(callback) {
 
 CoolLink.prototype.setTargetTemperature = function(temp, callback) {
     this.json_emitter.once('state', (json) => {
-        callback(null);
+        callback(null, 10);
     });
 }
 
