@@ -142,7 +142,7 @@ CoolLink.prototype.initSpecificSensors = function() {
 }
 CoolLink.prototype.getServices = function() {
     return [
-        this.temperature_sensor,
+        //this.temperature_sensor,
         this.humidity_sensor,
         this.air_quality_sensor,
         this.fan,
