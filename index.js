@@ -54,11 +54,11 @@ CoolLink.prototype.initConnection = function() {
 
 CoolLink.prototype.initCommonSensors = function() {
     // Temperature sensor
-    this.temperature_sensor = new Service.Thermostat(this.name);
-    this.temperature_sensor
-        .getCharacteristic(Characteristic.CurrentTemperature)
-        .setProps({minValue: -50, maxValue: 100})
-        .on('get', this.getTemperature.bind(this));
+    //this.temperature_sensor = new Service.Thermostat(this.name);
+    //this.temperature_sensor
+    //    .getCharacteristic(Characteristic.CurrentTemperature)
+     //   .setProps({minValue: -50, maxValue: 100})
+     //   .on('get', this.getTemperature.bind(this));
 
     //this.temperature_sensor.getCharacteristic(Characteristic.CurrentHeatingCoolingState)
     //    .on('get', this.getHeaterCoolerState.bind(this));
@@ -142,7 +142,7 @@ CoolLink.prototype.initSpecificSensors = function() {
 }
 CoolLink.prototype.getServices = function() {
     return [
-        this.temperature_sensor,
+        //this.temperature_sensor,
         this.humidity_sensor,
         this.air_quality_sensor,
         this.fan,
