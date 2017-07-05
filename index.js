@@ -60,24 +60,24 @@ CoolLink.prototype.initCommonSensors = function() {
         .setProps({minValue: -50, maxValue: 100})
         .on('get', this.getTemperature.bind(this));
 
-    this.temperature_sensor.getCharacteristic(Characteristic.CurrentHeatingCoolingState)
-        .on('get', this.getHeaterCoolerState.bind(this));
+    //this.temperature_sensor.getCharacteristic(Characteristic.CurrentHeatingCoolingState)
+    //    .on('get', this.getHeaterCoolerState.bind(this));
 
-    this.temperature_sensor.getCharacteristic(Characteristic.TargetHeatingCoolingState)
-        .on('get', this.getHeaterCoolerState.bind(this))
-        .on('set', this.setHeaterCoolerState.bind(this));
+    //this.temperature_sensor.getCharacteristic(Characteristic.TargetHeatingCoolingState)
+    //    .on('get', this.getHeaterCoolerState.bind(this))
+    //    .on('set', this.setHeaterCoolerState.bind(this));
 
-    this.temperature_sensor.getCharacteristic(Characteristic.TemperatureDisplayUnits)
-        .on('get', this.getTemperatureDisplayUnits.bind(this));
+    //this.temperature_sensor.getCharacteristic(Characteristic.TemperatureDisplayUnits)
+    //    .on('get', this.getTemperatureDisplayUnits.bind(this));
 
-    this.temperature_sensor.getCharacteristic(Characteristic.TargetTemperature)
-        .setProps({
-            minValue: 10,
-            maxValue: 40,
-            minStep: 1
-        })
-        .on('get', this.getTargetTemperature.bind(this))
-        .on('set', this.setTargetTemperature.bind(this));
+    //this.temperature_sensor.getCharacteristic(Characteristic.TargetTemperature)
+    //    .setProps({
+    //        minValue: 10,
+    //        maxValue: 40,
+    //        minStep: 1
+    //    })
+    //    .on('get', this.getTargetTemperature.bind(this))
+    //    .on('set', this.setTargetTemperature.bind(this));
 
     // Humidity sensor
     this.humidity_sensor = new Service.HumiditySensor(this.name);
