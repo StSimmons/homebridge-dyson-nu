@@ -52,60 +52,6 @@ CoolLink.prototype.initConnection = function() {
     });
 }
 
-CoolLink.prototype.getHeaterCoolerState = function(callback) {
-    var that = this;
-    this.json_emitter.once('state', (json) => {
-        var fmod = json['product-state']['fmod'];
-        var on = (fmod === "FAN");
-        var hmod = json['product-state']['hmod'];
-        var heating = (hmod === "HEAT");
-        var state = Characteristic.CurrentHeaterCoolerState.INACTIVE;
-        if (!on) {
-            state = Characteristic.CurrentHeaterCoolerState.INACTIVE;
-        } else {
-            if (heating) {
-                state = Characteristic.CurrentHeaterCoolerState.HEATING;
-            } else {
-                state = Characteristic.CurrentHeaterCoolerState.COOLING;
-            }
-        }
-        that.log("Heating:", state);
-        callback(null, state);
-    });
-}
-
-CoolLink.prototype.getTargetTemperature = function(callback) {
-    var that = this;
-    this.json_emitter.once('state', (json) => {
-        callback(null, 10);
-    });
-}
-
-CoolLink.prototype.setTargetTemperature = function(temp, callback) {
-    this.json_emitter.once('state', (json) => {
-        callback(null);
-    });
-}
-
-CoolLink.prototype.getTemperatureDisplayUnits = function(callback) {
-    var accessory = this;
-    this.json_emitter.once('state', (json) => {
-        callback(null, Characteristic.TemperatureDisplayUnits.CELSIUS);
-    });
-}
-
-CoolLink.prototype.setHeaterCoolerState = function(value, callback) {
-    var that = this;
-    var now = new Date();
-    var hmod = value === Characteristic.CurrentHeaterCoolerState.HEATING ? "HEAT" : "OFF";
-    var message = '{"msg":"STATE-SET","time":"' + now.toISOString() + '","data":{"hmod":"' + hmod + '"}}';
-    this.mqtt_client.publish(
-        this.getCommandTopic(),
-        message
-    );
-    this.getHeaterCoolerState(callback);
-}
-
 CoolLink.prototype.initCommonSensors = function() {
     // Temperature sensor
     this.temperature_sensor = new Service.Thermostat(this.name);
@@ -400,6 +346,59 @@ CoolLink.prototype.setNight = function(value, callback) {
         message
     );
     this.isNightOn(callback);
+}
+CoolLink.prototype.getHeaterCoolerState = function(callback) {
+    var that = this;
+    this.json_emitter.once('state', (json) => {
+        var fmod = json['product-state']['fmod'];
+        var on = (fmod === "FAN");
+        var hmod = json['product-state']['hmod'];
+        var heating = (hmod === "HEAT");
+        var state = Characteristic.CurrentHeaterCoolerState.INACTIVE;
+        if (!on) {
+            state = Characteristic.CurrentHeaterCoolerState.INACTIVE;
+        } else {
+            if (heating) {
+                state = Characteristic.CurrentHeaterCoolerState.HEATING;
+            } else {
+                state = Characteristic.CurrentHeaterCoolerState.COOLING;
+            }
+        }
+        that.log("Heating:", state);
+        callback(null, state);
+    });
+}
+
+CoolLink.prototype.getTargetTemperature = function(callback) {
+    var that = this;
+    this.json_emitter.once('state', (json) => {
+        callback(null, 10);
+    });
+}
+
+CoolLink.prototype.setTargetTemperature = function(temp, callback) {
+    this.json_emitter.once('state', (json) => {
+        callback(null);
+    });
+}
+
+CoolLink.prototype.getTemperatureDisplayUnits = function(callback) {
+    var accessory = this;
+    this.json_emitter.once('state', (json) => {
+        callback(null, Characteristic.TemperatureDisplayUnits.CELSIUS);
+    });
+}
+
+CoolLink.prototype.setHeaterCoolerState = function(value, callback) {
+    var that = this;
+    var now = new Date();
+    var hmod = value === Characteristic.CurrentHeaterCoolerState.HEATING ? "HEAT" : "OFF";
+    var message = '{"msg":"STATE-SET","time":"' + now.toISOString() + '","data":{"hmod":"' + hmod + '"}}';
+    this.mqtt_client.publish(
+        this.getCommandTopic(),
+        message
+    );
+    this.getHeaterCoolerState(callback);
 }
 function HotCoolLink(log, config) {
     CoolLink.call(this, log, config);
