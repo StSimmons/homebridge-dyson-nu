@@ -350,6 +350,7 @@ CoolLink.prototype.setNight = function(value, callback) {
 CoolLink.prototype.getHeaterCoolerState = function(callback) {
     var that = this;
     this.json_emitter.once('state', (json) => {
+        that.log("Get HeaterCooler:", 10, '%');
         var fmod = json['product-state']['fmod'];
         var on = (fmod === "FAN");
         var hmod = json['product-state']['hmod'];
@@ -372,18 +373,21 @@ CoolLink.prototype.getHeaterCoolerState = function(callback) {
 CoolLink.prototype.getTargetTemperature = function(callback) {
     var that = this;
     this.json_emitter.once('state', (json) => {
+        that.log("Get temp:", 10, '%');
         callback(null, 10);
     });
 }
 
 CoolLink.prototype.setTargetTemperature = function(temp, callback) {
+    var that = this;
     this.json_emitter.once('state', (json) => {
+        that.log("Set Temp:", rotation_speed, '%');
         callback(null, 10);
     });
 }
 
 CoolLink.prototype.getTemperatureDisplayUnits = function(callback) {
-    var accessory = this;
+    var that = this;
     this.json_emitter.once('state', (json) => {
         callback(null, Characteristic.TemperatureDisplayUnits.CELSIUS);
     });
